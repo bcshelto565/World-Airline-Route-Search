@@ -4,4 +4,6 @@ Sources:
   -   "Adjacency Matrix." Byju's, Byju's, byjus.com/maths/adjacency-matrix/.
 -   https://www.geeksforgeeks.org/c-program-to-implement-adjacency-matrix-of-a-given-graph/
   -   "C program to implement Adjacency Matrix of a given Graph." Geeks For Geeks, edited by Sandeep Jain, 21 May 2020, www.geeksforgeeks.org/c-program-to-implement-adjacency-matrix-of-a-given-graph/.
-
+- Array of Linked Lists
+-   https://www.geeksforgeeks.org/array-of-linked-list-in-c-cpp/
+  -   "Array of Linked Lists in C/C++." Geeks For Geeks, edited by Sandeep Jain, 11 Oct. 2021, www.geeksforgeeks.org/array-of-linked-list-in-c-cpp/.
