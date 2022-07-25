@@ -1,0 +1,7 @@
+Sources:
+- Adjacency Matrix
+-   https://byjus.com/maths/adjacency-matrix/
+  -   "Adjacency Matrix." Byju's, Byju's, byjus.com/maths/adjacency-matrix/.
+-   https://www.geeksforgeeks.org/c-program-to-implement-adjacency-matrix-of-a-given-graph/
+  -   "C program to implement Adjacency Matrix of a given Graph." Geeks For Geeks, edited by Sandeep Jain, 21 May 2020, www.geeksforgeeks.org/c-program-to-implement-adjacency-matrix-of-a-given-graph/.
+
