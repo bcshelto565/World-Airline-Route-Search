@@ -19,3 +19,8 @@ Some notes:
   - Pros: Saves space O(|V|+|E|). In the worst case, there can be C(V, 2) number of edges in a graph thus consuming O(V^2) space. Adding a vertex is easier. Computing all neighbors of a vertex takes optimal time.
   - Cons: Queries like whether there is an edge from vertex u to vertex v are not efficient and can be done O(V).
  In Real-life problems, graphs are sparse(|E| <<|V|2). That’s why adjacency lists Data structure is commonly used for storing graphs. Adjacency matrix will enforce (|V|2) bound on time complexity for such algorithms. 
+
+________________________________
+Some thoughts:
+- Does this need to be a weighted graph? 
+  - Typically used in searches when trying to find the shortest distance between two nodes....however this may not be necessary for our project because it looks like we're counting edges (connections) and not calculating distance?
