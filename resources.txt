@@ -7,7 +7,10 @@ Sources:
 - Array of Linked Lists
 -   https://www.geeksforgeeks.org/array-of-linked-list-in-c-cpp/
   -   "Array of Linked Lists in C/C++." Geeks For Geeks, edited by Sandeep Jain, 11 Oct. 2021, www.geeksforgeeks.org/array-of-linked-list-in-c-cpp/.
-
+- BFS Search Method
+  - https://www.geeksforgeeks.org/implementation-of-bfs-using-adjacency-matrix/
+- DFS Search Method
+  - https://www.geeksforgeeks.org/implementation-of-dfs-using-adjacency-matrix/
 
 ________________________________
 Some notes:
