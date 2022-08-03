@@ -11,7 +11,7 @@ Sources:
   - https://www.geeksforgeeks.org/implementation-of-bfs-using-adjacency-matrix/
 - DFS Search Method
   - https://www.geeksforgeeks.org/implementation-of-dfs-using-adjacency-matrix/
-
+https://www.math.utah.edu/~gustafso/s2016/2270/labs/lab3-adjacency.pdf
 ________________________________
 Some notes:
 - From "https://www.geeksforgeeks.org/graph-and-its-representations/" : 
