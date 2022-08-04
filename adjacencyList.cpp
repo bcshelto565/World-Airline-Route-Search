@@ -1,33 +1,25 @@
 /*
  * Samantha Fisher, sjc0208
- * Group ###
+ * Group #14
  * Adjacency List
  */
+
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
 #include <list>
-#include <cstdlib>
-#include <ctime>
 using namespace std;
 
-string city[140]; //global array to store raw city data
-
 class Graph {
+
     unordered_map<string, list<pair<string, int>>> cityAdjList; //adjacency list using stl unordered_map
                                                                 //it is of key <<string> -> list<string, int>>
 
 public:
-    void addEdge(string sourceCity, string destinationCity, int ID) {
+    void addEdge(string sourceCity, string destinationCity, int weight) {
 
-        //preventative measure to avoid dupes (though this is not full-proof)
-        if(sourceCity == destinationCity) {
-            return;
-        }
-        //sourceCity -> destinationCity, ID; pushback the pair of destin and ID at the source
-        else {
-            cityAdjList[sourceCity].push_back(make_pair(destinationCity, ID));
-        }
+        //sourceCity -> destinationCity, weight; pushback the pair of destin and ID at the source
+        cityAdjList[sourceCity].push_back(make_pair(destinationCity, weight));
 
     }
 
@@ -37,49 +29,44 @@ public:
             string city = p.first;
             list<pair<string, int>> neighbors = p.second;
 
-            cout << "from: " << city << "-> ";
+            cout << "Source: " << city << " --> " << endl;
             for(auto nbr: neighbors) {
                 string destination = nbr.first;
-                int ID = nbr.second;
+                int weight = nbr.second;
 
-                cout << "to: " << destination << " " << ID << " || ";
+                cout << destination << " " << weight << endl;
             }
             cout << endl;
         }
     }
 };
 
-//generates a random number between 0-140
-int genRand() {
-    int myRand;
-
-    myRand = rand() % 140;
-
-    return myRand;
-}
 
 int main() {
 
     ifstream inputFile;
-    inputFile.open("city.name", ios::in);
-    char line[256];
+    inputFile.open("flight.txt", ios::in);
+    char lineArr[256];
     Graph worldAirline;
-    srand(unsigned (time(0)));
+    string line, node1, node2;
 
-    //get the lines of the city file and store in city[i]
-    for (int i = 0; i < 140; i++){
-        inputFile.getline(line,256);
-        city[i] = line;
+    while(inputFile.getline(lineArr, 256)) {
+        line = lineArr;
+
+        //if line contains From: erase the leading From: and spaces and save source city into node1
+        if(line.find("From:", 0) == 0) {
+            line.erase(0,7);
+            node1 = line;
+        }
+        //else it is the To: cities, save those in node2 and add both to graph
+        else {
+            line.erase(0,7);
+            node2 = line;
+            worldAirline.addEdge(node1, node2, 1);
+        }
     }
 
     inputFile.close();
-
-    //add cities to adjacency list to make a directed graph
-    for(int i = 0; i < 140; i++) {
-
-        worldAirline.addEdge(city[genRand()], city[genRand()], i);
-
-    }
 
     worldAirline.printAdjList();
 
