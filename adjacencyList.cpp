@@ -18,7 +18,7 @@ class Graph {
 public:
     void addEdge(string sourceCity, string destinationCity, int weight) {
 
-        //sourceCity -> destinationCity, weight; pushback the pair of destin and ID at the source
+        //sourceCity -> destinationCity, weight; pushback the pair of destin and weight at the source
         cityAdjList[sourceCity].push_back(make_pair(destinationCity, weight));
 
     }
@@ -38,6 +38,52 @@ public:
             }
             cout << endl;
         }
+    }
+
+    void testOne(string cityA, string cityB, int numConnections) {
+        int countWeight = 1; //countWeight starts at 1 because all edges have weight = 1
+
+        //checking if city was found or not
+        if(cityAdjList.find(cityA) == cityAdjList.end()) {
+            cout << cityA << " was not found" << endl;
+        }
+        //walking through graph to find cityA and cityB
+        else {
+            for (auto key: cityAdjList) {
+                string city = key.first;
+                list<pair<string, int>> neighbors = key.second;
+
+                if (city == cityA) {
+                    for (auto nbr: neighbors) {
+                        string destination = nbr.first;
+                        int weight = nbr.second;
+
+                        //count weight until destination is reached
+                        if(destination == cityB) {
+                            break;
+                        }
+                        else {
+                            countWeight = weight + countWeight;
+                        }
+                    }
+                }
+            }
+        }
+
+        //reporting to user if connection is in x or less connections
+        if(numConnections >= countWeight) {
+            cout << cityA << " to " << cityB << endl;
+            cout << "Total connections: " << countWeight << endl;
+        }
+        else {
+            cout << "No route exists." << endl;
+        }
+
+    }
+
+    void testTwo() {
+        //check to see if key even has those cities?
+        //count edges
     }
 };
 
@@ -68,7 +114,9 @@ int main() {
 
     inputFile.close();
 
-    worldAirline.printAdjList();
+    worldAirline.testOne("Seoul, South Korea", "Seattle, United States", 7);
+    worldAirline.testOne("Osaka, Japan", "Harare, Zimbabwe", 10);
+
 
     return 0;
 }
