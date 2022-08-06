@@ -16,8 +16,13 @@ class Node{
         Node *next;
         Node();
         Node(Node* previous, int data);
-        void newNode(Node** previous, int data);    
+        void newNode(Node* previous, int data);    
 };
+
+Node::Node(){
+    val=0;
+    next=NULL;
+}
 
 Node::Node(Node* head, int data){
     Node* newN = new Node();
@@ -25,7 +30,7 @@ Node::Node(Node* head, int data){
     head->next = newN;
 };
 
-void Node::newNode(Node** previous, int data){                  // code here causes compilation issues. need to fix pointer problems
+void Node::newNode(Node* previous, int data){                  // code here causes compilation issues. need to fix pointer problems
     if(previous == NULL){
         cout << "Previous node cannot be NULL \n";
         return;
@@ -47,11 +52,14 @@ class Graph{
           bool adjChck(string n1, string n2);
           int routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set);
           void task3(map<const string, int> map1, Graph g);
-          static int adj[140][140];
+          static int adj[140][140];   
      private: 
           int n;
+
            // You may want to use adjacent list implementation for sparse graph instead
 };
+
+int Graph::adj[140][140];
 
 Graph::Graph(int d){
     for (int i=0; i < d; i++){
@@ -241,9 +249,10 @@ int main(int argc, char *argv[]){
         getline(cin, origin);
         int originI, destCnt, minConn;
         originI = city[origin];
-        Node* head;
+        Node* head = new Node();
+        Node* nexNode = new Node();
         head->val = originI;
-        head->next = NULL;
+        // head->next = NULL;
         stack<int> destinations;
         for(int d=0; d<140; d++){
             if(Graph::adj[originI][d]){
@@ -253,12 +262,13 @@ int main(int argc, char *argv[]){
         // vector<int>::iterator itr;
         int e = destinations.top();
         // head->next = 
-        newNode(*head, e);
-        // head->next = nexNode;
+        // newNode(head, e);
+        head->next = nexNode;
+        nexNode->val = e;
         int f = destinations.size();
         for(int g=0; g<f; g++){
             for(int h=0; h<140; h++){
-                if(Graph::adj[g][h]){
+                if(graph.adj[g][h]){
                     if(searchStck(destinations, h)){
                         cout << "Connection found between destinations " << g << " and " << h << endl;
                         cout << "Popping " << h << " out of the stack and moving forward\n";
