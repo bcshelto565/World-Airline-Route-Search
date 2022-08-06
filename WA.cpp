@@ -14,27 +14,28 @@ class Node{
     public:
         int val;
         Node *next;
-        Node(Node* head, int data);
-        Node newNode(Node* previous, int data);
-        void printList(Node *node);
+        Node();
+        Node(Node* previous, int data);
+        void newNode(Node** previous, int data);    
 };
 
 Node::Node(Node* head, int data){
-    new Node* n5;
-    n5->val = data;
-    head->next = n5;
+    Node* newN = new Node();
+    newN->val = data;
+    head->next = newN;
 };
 
-Node Node::newNode(Node* previous, int data){
+void Node::newNode(Node** previous, int data){                  // code here causes compilation issues. need to fix pointer problems
     if(previous == NULL){
         cout << "Previous node cannot be NULL \n";
-        return *previous;
+        return;
     }
     Node* newnode = new Node();
     newnode->val = data;
     newnode->next = previous->next;
     previous->next = newnode;
-}
+    return;
+};
 
 class Graph{
      public:
@@ -46,9 +47,10 @@ class Graph{
           bool adjChck(string n1, string n2);
           int routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set);
           void task3(map<const string, int> map1, Graph g);
+          static int adj[140][140];
      private: 
           int n;
-          int adj[140][140]; // You may want to use adjacent list implementation for sparse graph instead
+           // You may want to use adjacent list implementation for sparse graph instead
 };
 
 Graph::Graph(int d){
@@ -104,7 +106,7 @@ bool Graph::adjChck(string n1, string n2){
     }
 }
 
-int Graph::routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set){
+/* int Graph::routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set){
     if(adj[in][out]){
         if(set.find(out) != set.end()){
             cout << stack.top() << " is being popped as the top element for being in the stack\n";
@@ -124,35 +126,32 @@ int Graph::routeFinder(Node* head, int in, int out, stack<int> stack, set<int> s
             }
         }
     }
-}
-
-// map<const string, int> city;
-
-/* void Graph::task3(map<const string, int> map1, Graph g){
-    string origin;
-    int originI;
-    stack<int> destinations;
-    set<int> priorities;
-    cout << "What is the city that we are using as the origin point? (case sensitive): ";
-    getline(cin, origin);
-    originI = city[origin];
-    for(int d=0; d<n; n++){
-        if(adj[originI][d]){
-            destinations.push(d);
-            priorities.insert(d);
-        }
-    }
-    int desSize = destinations.size();
-    // routefinder(originI, destinations.top(), destinations);
-    // Node* head = NULL;
-    Node* head = NULL;
-    head->val = originI;
-    graph.routeFinder(head, originI, destinations.top(), destinations, priorities);
 } */
+
+// 
+
+void Graph::task3(map<const string, int> map1, Graph g){
+    
+} 
 
 /* int routefinder(int in, int out, stack<int> stack){
     
 }*/
+
+bool searchStck(stack<int> stck, int a){
+    stack<int> stck2 = stck;
+    int size = stck2.size();
+    for(int i=0; i<size; i++){
+        if(stck2.top() == a){
+            return true;
+        }
+        else{
+            stck2.pop();
+            continue;
+        }
+        return false;
+    }
+}
 
 
 struct strCmp {
@@ -168,7 +167,7 @@ struct strCmp {
 int main(int argc, char *argv[]){
    int i, j, node1, node2, n, ptask;
    string line, n3, task;
-
+    map<const string, int> city;
 
    cout << "Please enter the number of cities in your graph: " << endl;
    cout << "---------------------------------------------------" << endl;
@@ -237,6 +236,37 @@ int main(int argc, char *argv[]){
    flightFile.close();
    if(ptask = 3){
         // graph.task3(city, graph); this line won't work due to an issue with the "graph." part
+        cout << "What is the origin city to be used for task 3? (case sensitive): ";
+        string origin;
+        getline(cin, origin);
+        int originI, destCnt, minConn;
+        originI = city[origin];
+        Node* head;
+        head->val = originI;
+        head->next = NULL;
+        stack<int> destinations;
+        for(int d=0; d<140; d++){
+            if(Graph::adj[originI][d]){
+                destinations.push(d);
+            }
+        }
+        // vector<int>::iterator itr;
+        int e = destinations.top();
+        // head->next = 
+        newNode(*head, e);
+        // head->next = nexNode;
+        int f = destinations.size();
+        for(int g=0; g<f; g++){
+            for(int h=0; h<140; h++){
+                if(Graph::adj[g][h]){
+                    if(searchStck(destinations, h)){
+                        cout << "Connection found between destinations " << g << " and " << h << endl;
+                        cout << "Popping " << h << " out of the stack and moving forward\n";
+                        destinations.pop();
+                    }
+                }
+            }
+        }
    }
    /*if(graph.adjChck(cityg1, cityg2)){
         cout << cityg1 << " and " << cityg2 << " are adjacent!! True!!\n";
