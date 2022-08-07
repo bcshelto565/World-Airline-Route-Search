@@ -221,28 +221,33 @@ void Graph::bfsRoute(int ol, stack<int> placesToGo){
                     if(searchStck(placesToGo, i)){
                         if(placesToGo.top() == i){
                             placesToGo.pop();
+                            cout << "if statement nested2 hits 1\n";
                             continue;
                         }
                         else{
                             stack<int> copyPlaces;
                             stack<int> copyPlaces1 = placesToGo;
+                            cout << "else statement hits 2\n";
                             while(!copyPlaces1.empty()){
                                 if(copyPlaces1.top() != i){
+                                    cout << "while if statement hits 3\n";
                                     copyPlaces.push(copyPlaces1.top());
                                     copyPlaces1.pop();
                                     placesToGo = copyPlaces;
                                     continue;
                                 }
-                                else{
+                                /* else{
+                                    cout << "last else statement hits\n";
                                     continue;
-                                }
+                                } */
                             }
-                            
+                            continue;
                         }
                     }
                     Que.push_back(i);
                     visits[i] = true;
                 }
+                continue;
             }
         }
         break;
