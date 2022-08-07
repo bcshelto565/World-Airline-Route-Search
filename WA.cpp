@@ -7,6 +7,7 @@
 #include <map>
 #include <stack>
 #include <set>
+#include <list>
 
 using namespace std;
 
@@ -53,6 +54,8 @@ class Graph{
           int routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set);
           void task3(map<const string, int> map1, Graph g);
           static int adj[140][140];   
+          void BFS(int l);
+          void bfsRoute(int ol, stack<int> placesToGo);
      private: 
           int n;
 
@@ -112,7 +115,7 @@ bool Graph::adjChck(string n1, string n2){
             return false;
         }
     }
-}
+};
 
 /* int Graph::routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set){
     if(adj[in][out]){
@@ -142,10 +145,6 @@ void Graph::task3(map<const string, int> map1, Graph g){
     
 } 
 
-/* int routefinder(int in, int out, stack<int> stack){
-    
-}*/
-
 bool searchStck(stack<int> stck, int a){
     stack<int> stck2 = stck;
     int size = stck2.size();
@@ -159,8 +158,147 @@ bool searchStck(stack<int> stck, int a){
         }
         return false;
     }
+};
+
+/* int min;
+int current;
+
+int minD(int dis[], bool sSet[], int numC){
+    int mini = INT_MAX, min_index;
+    for(int v=0; v<numC; v++){
+        if(sSet[v] == false && dis[v] <= mini){
+            mini = dis[v], min_index = v;
+        }
+    }
+    return min_index;
 }
 
+/* int pathCnt(int source, int destin, int numC){
+    vector<int>
+} */
+
+void Graph::BFS(int l){
+    vector<bool> visits;
+    visits.resize(140, false);
+    list<int> Que;
+    visits[l] = true;
+    Que.push_back(l);
+    int visi;
+    while(!Que.empty()){
+        l = Que.front();
+        cout << l << " ";
+        Que.pop_front();
+        for(int i=0; i<140;i++){
+            if(adj[l][i] == 1 && (!visits[i])){
+                Que.push_back(i);
+                visits[i] = true;
+            }
+        }
+        /* for(auto adjacent: adj[l]){
+            if(!visits[adjacent]){
+                visits[adjacent] = true;
+                Que.push_back(adjacent);
+            }
+        } */
+    }
+};
+
+void Graph::bfsRoute(int ol, stack<int> placesToGo){
+    vector<bool> visits;
+    visits.resize(140, false);
+    list<int> Que;
+    // visits[l] = true;
+    Que.push_back(ol);
+    int visi;
+    while(!Que.empty()){
+        ol = Que.front();
+        cout << ol << " ";
+        Que.pop_front();
+        while(!placesToGo.empty() && visits[ol] == false){
+            for(int i=0; i<140;i++){
+                cout << "For loop hits\n";
+                if(adj[ol][i] == 1 && (!visits[i])){
+                    if(searchStck(placesToGo, i)){
+                        if(placesToGo.top() == i){
+                            placesToGo.pop();
+                            cout << "if statement nested2 hits 1\n";
+                            continue;
+                        }
+                        else{
+                            stack<int> copyPlaces;
+                            stack<int> copyPlaces1 = placesToGo;
+                            cout << "else statement hits 2\n";
+                            while(!copyPlaces1.empty()){
+                                if(copyPlaces1.top() != i){
+                                    cout << "while if statement hits 3\n";
+                                    copyPlaces.push(copyPlaces1.top());
+                                    copyPlaces1.pop();
+                                    placesToGo = copyPlaces;
+                                    continue;
+                                }
+                                /* else{
+                                    cout << "last else statement hits\n";
+                                    continue;
+                                } */
+                            }
+                            continue;
+                        }
+                    }
+                    Que.push_back(i);
+                    visits[i] = true;
+                }
+                continue;
+            }
+        }
+        break;
+    }
+};
+
+/*
+Node* routefinder(int in, int out, Node* headd, Graph gr, int m, int curr){
+    // if(headd->val != in){
+      //  Node* inN = new Node();
+      //  headd->next = inN;
+      //  inN->val = in;
+    // } 
+    if(gr[in][out]){
+            Node* con = new Node();
+            con->val = out;
+            headd->next = con;
+            return con;
+    }
+    else{
+        // bool flag = false;
+        // int min, current;        // minimum connections for path detected and current amount of connections
+        for(int k=0; k<140; k++){
+            if(gr[in][k]){
+                if(gr[k][out]){
+                    Node* conne = new Node();
+                    conne->val = k;
+                    headd->next = conne;
+                    Node* outN = new Node();
+                    outN->val = out;
+                    conne->next = outN;
+                    return outN;
+                }
+                else{
+                    if(m != NULL){
+                        if(curr > m){
+                            continue;
+                        }
+                        else{
+                            curr++;
+                            headd->next = routefinder(k, out, headd, gr, m, curr)
+                        }
+                    }
+                }
+            }
+        }
+        // int min;
+    }
+    
+}
+*/
 
 struct strCmp {
     bool operator()( const string s1, const string s2 ) const {
@@ -266,17 +404,38 @@ int main(int argc, char *argv[]){
         head->next = nexNode;
         nexNode->val = e;
         int f = destinations.size();
-        for(int g=0; g<f; g++){
+
+        /* cout << "Destinations size is " << destinations.size() << endl;
+        stack<int> desCopy = destinations;
+        cout << "These are the destination integers: ";
+        while(!desCopy.empty()){
+            cout << desCopy.top();
+            desCopy.pop();
+            cout << ", ";
+            continue;
+        } */
+        // cout << "\n---------------------------------------------\n";
+        // graph.BFS(originI);
+        graph.bfsRoute(originI, destinations);
+        /*
+        // while(!destinations.empty()){
             for(int h=0; h<140; h++){
-                if(graph.adj[g][h]){
-                    if(searchStck(destinations, h)){
-                        cout << "Connection found between destinations " << g << " and " << h << endl;
+                // cout << "For loop 1 is starting...\n";
+                if(graph.adj[destinations.top()][h]){
+                    if(searchStck(destinations, h) && destinations.top() != h){
+                        cout << "Connection found between destinations " << destinations.top() << " and " << h << endl;
                         cout << "Popping " << h << " out of the stack and moving forward\n";
                         destinations.pop();
                     }
                 }
+                // continue;
             }
-        }
+            if(!destinations.empty()){
+                cout << "There is no direct path only including origin and destinations... running recursive check\n";
+                destinations.pop();
+                // routeFinder(nexNode->val, destinations.top(), nexNode, graph);
+            } */
+        // }
    }
    /*if(graph.adjChck(cityg1, cityg2)){
         cout << cityg1 << " and " << cityg2 << " are adjacent!! True!!\n";
