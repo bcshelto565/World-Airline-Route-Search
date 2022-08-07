@@ -216,10 +216,12 @@ void Graph::bfsRoute(int ol, stack<int> placesToGo){
         Que.pop_front();
         while(!placesToGo.empty() && visits[ol] == false){
             for(int i=0; i<140;i++){
+                cout << "For loop hits\n";
                 if(adj[ol][i] == 1 && (!visits[i])){
                     if(searchStck(placesToGo, i)){
                         if(placesToGo.top() == i){
                             placesToGo.pop();
+                            continue;
                         }
                         else{
                             stack<int> copyPlaces;
@@ -228,13 +230,14 @@ void Graph::bfsRoute(int ol, stack<int> placesToGo){
                                 if(copyPlaces1.top() != i){
                                     copyPlaces.push(copyPlaces1.top());
                                     copyPlaces1.pop();
+                                    placesToGo = copyPlaces;
                                     continue;
                                 }
                                 else{
                                     continue;
                                 }
                             }
-                            placesToGo = copyPlaces;
+                            
                         }
                     }
                     Que.push_back(i);
