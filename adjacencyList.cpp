@@ -32,25 +32,6 @@ class Graph {
     unordered_map<string, City*> graph; //graph list <string, City type pointer>
 
 private:
-    int countConnectionsDepthFirst(City* cityA, City* cityB, int numConnections, int recursionDepth) {
-        auto search = cityA->edgeList.find(cityB);
-
-        //we have found our destination, so return the number of connections
-        if(search != cityA->edgeList.end()) {
-            return recursionDepth + 1;
-        }
-        else if(recursionDepth < numConnections - 1){
-            for(auto i: cityA->edgeList) {
-               int temp = countConnectionsDepthFirst(i.first, cityB, numConnections, recursionDepth + 1);
-
-               if(temp != -1) {
-                   return temp;
-               }
-            }
-        }
-        //no route found
-        return -1;
-    }
 
     int countConnectionsBreadthFirst(City* cityA, City* cityB, int numConnections) {
         queue<City*> q;
