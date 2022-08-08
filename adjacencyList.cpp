@@ -32,6 +32,25 @@ class Graph {
     unordered_map<string, City*> graph; //graph list <string, City type pointer>
 
 private:
+    int countConnectionsDepthFirst(City* cityA, City* cityB, int numConnections, int recursionDepth) {
+        auto search = cityA->edgeList.find(cityB);
+
+        //we have found our destination, so return the number of connections
+        if(search != cityA->edgeList.end()) {
+            return recursionDepth + 1;
+        }
+        else if(recursionDepth < numConnections - 1){
+            for(auto i: cityA->edgeList) {
+               int temp = countConnectionsDepthFirst(i.first, cityB, numConnections, recursionDepth + 1);
+
+               if(temp != -1) {
+                   return temp;
+               }
+            }
+        }
+        //no route found
+        return -1;
+    }
 
     int countConnectionsBreadthFirst(City* cityA, City* cityB, int numConnections) {
         queue<City*> q;
@@ -81,7 +100,7 @@ private:
         return -1;
     }
 
-    int shortestPathDFS(City* cityA, City* cityB) {
+    int shortestPathBFS(City* cityA, City* cityB) {
         queue<City*> q;
 
         //make all cities undiscovered
@@ -239,15 +258,15 @@ public:
         City* cityD = graph[cityDName];
 
         //shortest path from A->B;
-        int pathAB = shortestPathDFS(cityA, cityB);
+        int pathAB = shortestPathBFS(cityA, cityB);
         cout << "A->B: " << pathAB << " " << endl;
 
         //shortest path from B->C
-        int pathBC = shortestPathDFS(cityB, cityC);
+        int pathBC = shortestPathBFS(cityB, cityC);
         cout << "B->C: " << pathBC << " " << endl;
 
         //shortest path from C->D
-        int pathCD = shortestPathDFS(cityC, cityD);
+        int pathCD = shortestPathBFS(cityC, cityD);
         cout << "C->D: " << pathCD << " " << endl;
 
         int totalPathDist = pathAB + pathBC + pathCD;
