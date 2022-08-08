@@ -25,30 +25,13 @@ public:
     City* parentCity;                   //city type pointer to point at city's parent node
 };
 
-
+/*
+ * Graph class: defines the adjacency list as an unordered map of source city and its neighbours
+ */
 class Graph {
     unordered_map<string, City*> graph; //graph list <string, City type pointer>
 
 private:
-    int countConnectionsDepthFirst(City* cityA, City* cityB, int numConnections, int recursionDepth) {
-        auto search = cityA->edgeList.find(cityB);
-
-        //we have found our destination, so return the number of connections
-        if(search != cityA->edgeList.end()) {
-            return recursionDepth + 1;
-        }
-        else if(recursionDepth < numConnections - 1){
-            for(auto i: cityA->edgeList) {
-               int temp = countConnectionsDepthFirst(i.first, cityB, numConnections, recursionDepth + 1);
-
-               if(temp != -1) {
-                   return temp;
-               }
-            }
-        }
-        //no route found
-        return -1;
-    }
 
     int countConnectionsBreadthFirst(City* cityA, City* cityB, int numConnections) {
         queue<City*> q;
@@ -66,6 +49,8 @@ private:
 
         while(!q.empty()) {
             City* temp = q.front();
+
+            //if cityB is found at the front of the queue
             if(temp == cityB) {
                 int countPath = 0;
 
@@ -96,12 +81,55 @@ private:
         return -1;
     }
 
+    int shortestPathDFS(City* cityA, City* cityB) {
+        queue<City*> q;
+
+        //make all cities undiscovered
+        for(auto city: graph) {
+            city.second->discovered = false;
+        }
+
+        //make first city discovered
+        cityA->discovered = true;
+
+        //push onto stack
+        q.push(cityA);
+
+        while(!q.empty()) {
+            City* temp = q.front();
+
+            //if cityB is found at the front of the queue
+            if(temp == cityB) {
+                int countPath = 0;
+
+                //start at our leaf, stop when we've found the root, crawl back up until we reach root
+                for(City* childNode = temp; childNode != cityA; childNode = childNode->parentCity) {
+                    countPath++;
+                }
+
+                return countPath;
+            }
+
+            q.pop();
+
+            for(auto nbr: temp->edgeList) {
+                if(!nbr.first->discovered) {
+                    nbr.first->discovered = true;
+                    nbr.first->parentCity = temp;
+                    q.push(nbr.first);
+                }
+            }
+        }
+
+        return -1;
+    }
+
 public:
     void addEdge(string sourceCity, string destinationCity, int weight) {
 
         auto search = graph.find(sourceCity);
 
-        //failed to find source city
+        //if failed to find source city, add to graph
         if(search == graph.end()) {
             City* newCity = new City(sourceCity);
             graph.insert(make_pair(sourceCity, newCity));
@@ -109,17 +137,18 @@ public:
 
         search = graph.find(destinationCity);
 
-        //failed to find destination city
+        //failed to find destination city, add to graph
         if(search == graph.end()) {
             City* newCity = new City(destinationCity);
             graph.insert(make_pair(destinationCity, newCity));
         }
 
+        //create edge list
         graph[sourceCity]->edgeList.insert(make_pair(graph[destinationCity], weight));
 
     }
 
-    //print list function
+    //print graph function
     void printAdjList() {
         for(auto p: graph) {
             string cityName = p.first;
@@ -136,12 +165,13 @@ public:
         }
     }
 
+    //function to address problem 1
     void testOne(string cityAName, string cityBName, int numConnections) {
         auto search = graph.find(cityAName);
 
         //failed to find source city
         if(search == graph.end()) {
-            cout << cityAName << "not found." << endl;
+            cout << cityAName << " not found." << endl;
             return;
         }
 
@@ -149,7 +179,7 @@ public:
 
         //failed to find source city
         if(search == graph.end()) {
-            cout << cityBName << "not found." << endl;
+            cout << cityBName << " not found." << endl;
             return;
         }
 
@@ -169,10 +199,76 @@ public:
         }
     }
 
-    void testTwo() {
+    //function to address problem 2
+    void testTwo(string cityAName, string cityBName, string cityCName, string cityDName) {
+        auto search = graph.find(cityAName);
+
+        //failed to find source city
+        if(search == graph.end()) {
+            cout << cityAName << " not found." << endl;
+            return;
+        }
+
+        search = graph.find(cityBName);
+
+        //failed to find source city
+        if(search == graph.end()) {
+            cout << cityBName << " not found." << endl;
+            return;
+        }
+
+        search = graph.find(cityCName);
+
+        //failed to find source city
+        if(search == graph.end()) {
+            cout << cityBName << " not found." << endl;
+            return;
+        }
+
+        search = graph.find(cityDName);
+
+        //failed to find source city
+        if(search == graph.end()) {
+            cout << cityBName << " not found." << endl;
+            return;
+        }
+
+        City* cityA = graph[cityAName];
+        City* cityB = graph[cityBName];
+        City* cityC = graph[cityCName];
+        City* cityD = graph[cityDName];
+
+        //shortest path from A->B;
+        int pathAB = shortestPathDFS(cityA, cityB);
+        cout << "A->B: " << pathAB << " " << endl;
+
+        //shortest path from B->C
+        int pathBC = shortestPathDFS(cityB, cityC);
+        cout << "B->C: " << pathBC << " " << endl;
+
+        //shortest path from C->D
+        int pathCD = shortestPathDFS(cityC, cityD);
+        cout << "C->D: " << pathCD << " " << endl;
+
+        int totalPathDist = pathAB + pathBC + pathCD;
+
+        //reporting to user if connection exists
+        if(pathAB == -1) {
+            cout << "No route exists." << endl;
+        }
+        else if(pathBC == -1) {
+            cout << "No route exists." << endl;
+        }
+        else if(pathCD == -1) {
+            cout << "No route exists." << endl;
+        }
+        else {
+            cout << cityA->name << " to " << cityD->name << " through "
+                 << cityB->name << " and " << cityC->name << endl;
+            cout << "Total connections: " << totalPathDist << endl;
+        }
 
     }
-
 
 };
 
@@ -183,7 +279,9 @@ int main() {
     inputFile.open("flight.txt", ios::in);
     char lineArr[256];
     Graph worldAirline;
-    string line, node1, node2;
+    string line, node1, node2, cityA, cityB, cityC, cityD;
+    int userChoice = -1;
+    int userNumConnects = 0;
 
     while(inputFile.getline(lineArr, 256)) {
         line = lineArr;
@@ -203,15 +301,62 @@ int main() {
 
     inputFile.close();
 
-    //worldAirline.printAdjList();
+    do {
+        cout << "\nPlease choose a program to run or enter 0 to exit: " << endl;
+        cout << "Program 1: I am in city “A”, can I fly to city  “B”  with less than x connections? Give me the\n"
+                "route with the smallest number of connections or tell me there is no such a route.\n"
+                "\nProgram 2: Give me the route with the smallest number of connections from city “A” to city\n"
+                "“D” through city “B” and “C”. (the order of  “B” and “C” is not important). Or\n"
+                "tell me there is no such a route\n"
+                "\nProgram 3: Print adjacency list"<< endl;
 
-    worldAirline.testOne("Seoul, South Korea", "Seattle, United States", 10);
-    worldAirline.testOne("Seoul, South Korea", "Panama City, Panama", 10);
-    worldAirline.testOne("Osaka, Japan", "Pittsburgh, United States", 20);
+        cout << "\nFOR ALL CITY INPUTS: Format is: City Name, Country Name" << endl;
+        cout << "EXAMPLE CITY: New York City, United States" << endl;
 
-    //worldAirline.testTwo("Osaka, Japan", "Detroit, United States","Vienna, Austria","Harare, Zimbabwe");
+        cout << "\nEnter either a 1, 2, 3, or 0: ";
+        cin >> userChoice;
 
-    //worldAirline.testTwo("Osaka, Japan", "Caracas, Venezuela","Vienna, Austria","Harare, Zimbabwe");
+        if(userChoice == 1) {
+            cin.ignore();
+            cout << "Enter city A: ";
+            getline(cin, cityA);
+            cout << "Enter city B: ";
+            getline(cin, cityB);
+            cout << "Enter number of connections: ";
+            cin >> userNumConnects;
+
+            cout << endl << "PRINTING RESULT --------------------------------" << endl;
+            worldAirline.testOne(cityA, cityB, userNumConnects);
+            cout << "------------------------------------------------" << endl;
+
+        }
+        else if(userChoice == 2){
+            cin.ignore();
+            cout << "Enter city A: ";
+            getline(cin, cityA);
+            cout << "Enter city B: ";
+            getline(cin, cityB);
+            cout << "Enter city C: ";
+            getline(cin, cityC);
+            cout << "Enter city D: ";
+            getline(cin, cityD);
+
+            cout << endl << "PRINTING RESULT --------------------------------" << endl;
+            worldAirline.testTwo(cityA, cityB, cityC, cityD);
+            cout << "------------------------------------------------" << endl;
+        }
+        else if(userChoice == 3) {
+            cout << endl << "PRINTING RESULT --------------------------------" << endl;
+            worldAirline.printAdjList();
+            cout << "------------------------------------------------" << endl;
+        }
+        else {
+            if(userChoice > 3) {
+                cout << "Incorrect choice, try again." << endl;
+            }
+        }
+
+    }while(userChoice != 0);
 
 
     return 0;
