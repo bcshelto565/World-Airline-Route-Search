@@ -8,6 +8,8 @@
 #include <stack>
 #include <set>
 #include <list>
+#include <algorithm>
+#include <random>
 
 using namespace std;
 
@@ -31,17 +33,13 @@ Node::Node(Node* head, int data){
     head->next = newN;
 };
 
-void Node::newNode(Node* previous, int data){                  // code here causes compilation issues. need to fix pointer problems
-    if(previous == NULL){
-        cout << "Previous node cannot be NULL \n";
-        return;
-    }
-    Node* newnode = new Node();
-    newnode->val = data;
-    newnode->next = previous->next;
-    previous->next = newnode;
-    return;
-};
+void printList(Node *node) { 
+    while (node != NULL) 
+    { 
+        cout << " " << node->val; 
+        node = node->next; 
+    } 
+} 
 
 class Graph{
      public:
@@ -55,7 +53,13 @@ class Graph{
           void task3(map<const string, int> map1, Graph g);
           static int adj[140][140];   
           void BFS(int l);
-          void bfsRoute(int ol, stack<int> placesToGo);
+          void bfsRoute(int ol, stack<int> placesToGo, Node* head);
+          void DFS(int st);
+          void dfsRoute(int st, stack<int> placesToGo, Node* head);
+          bool bFs(int ori, int dst, int route[], int dist[]);
+          void printRte(int ori, int dst);
+          int rteFinder(int ori, int dst, Node* head);
+          void Task3(int orig, stack<int> places2Go, Node* head);
      private: 
           int n;
 
@@ -83,67 +87,7 @@ void Graph::print(){
         }
         cout << endl;
     }
-
 };
-
-bool Graph::adjChck(string n1, string n2){
-    map<const string, int> city1;
-    ifstream cities;
-    string line1;
-    int o1, o2;
-    cities.open("city.name", ios::in);
-    for(int a=0; a<140; a++){
-        getline(cities, line1);
-        line1.erase(prev(line1.end()));
-        city1[line1] = a;
-    }
-    if(!city1[n1]){
-        cout << "city 1 not found! search term: " << n1 << endl;
-        return false;
-    }
-    else if(!city1[n2]){
-        cout << "city 2 not found! search term: " << n2 << endl;
-        return false;
-    }
-    else{
-        o1 = city1[n1];
-        o2 = city1[n2];
-        if(adj[o1][o2] = 1){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-};
-
-/* int Graph::routeFinder(Node* head, int in, int out, stack<int> stack, set<int> set){
-    if(adj[in][out]){
-        if(set.find(out) != set.end()){
-            cout << stack.top() << " is being popped as the top element for being in the stack\n";
-            stack.pop();
-        }
-        return 0;
-    }
-    else{
-        for(int e=0; e<140; e++){
-            if(adj[in][e] && adj[e][out]){
-                head->next = Node(head, e);
-                cout << e << " is a connection between " << in << " and " << out << endl;
-                return e;
-            }
-            else{
-                continue;
-            }
-        }
-    }
-} */
-
-// 
-
-void Graph::task3(map<const string, int> map1, Graph g){
-    
-} 
 
 bool searchStck(stack<int> stck, int a){
     stack<int> stck2 = stck;
@@ -160,22 +104,7 @@ bool searchStck(stack<int> stck, int a){
     }
 };
 
-/* int min;
-int current;
 
-int minD(int dis[], bool sSet[], int numC){
-    int mini = INT_MAX, min_index;
-    for(int v=0; v<numC; v++){
-        if(sSet[v] == false && dis[v] <= mini){
-            mini = dis[v], min_index = v;
-        }
-    }
-    return min_index;
-}
-
-/* int pathCnt(int source, int destin, int numC){
-    vector<int>
-} */
 
 void Graph::BFS(int l){
     vector<bool> visits;
@@ -194,111 +123,368 @@ void Graph::BFS(int l){
                 visits[i] = true;
             }
         }
-        /* for(auto adjacent: adj[l]){
-            if(!visits[adjacent]){
-                visits[adjacent] = true;
-                Que.push_back(adjacent);
-            }
-        } */
     }
 };
 
-void Graph::bfsRoute(int ol, stack<int> placesToGo){
+void Append(Node* head, int p){
+    if(head->next != NULL){
+        Append(head->next, p);
+    }
+    else{
+        Node* temp = new Node();
+        temp->val = p;
+        head->next = temp;
+    }
+}
+
+void Graph::bfsRoute(int ol, stack<int> placesToGo, Node* head){
     vector<bool> visits;
     visits.resize(140, false);
     list<int> Que;
-    // visits[l] = true;
+    int l;
+    visits[ol] = false;
+    bool visi = false;
     Que.push_back(ol);
-    int visi;
+    // placesToGo.push(ol);
+    // int visi;
     while(!Que.empty()){
-        ol = Que.front();
-        cout << ol << " ";
+        l = Que.front();
+        // cout << l << " ";
         Que.pop_front();
-        while(!placesToGo.empty() && visits[ol] == false){
-            for(int i=0; i<140;i++){
-                cout << "For loop hits\n";
-                if(adj[ol][i] == 1 && (!visits[i])){
+        for(int i=0; i<140;i++){
+            /* stack<int> placCopy = placesToGo;
+            while(!placCopy.empty()){
+                cout << " " << placCopy.top();
+                placCopy.pop();
+            } */
+            if(placesToGo.empty() && visi == false){
+                // break;
+                placesToGo.push(ol);
+                visi = true;
+            }
+            else if(placesToGo.empty() && visi == true){
+                break;
+            }
+            else if(i == ol && !placesToGo.empty() && visi == false){
+                continue;
+            }
+            if(adj[l][i] == 1 && (!visits[i])){
+                    // cout << l << " and " << i << endl;
                     if(searchStck(placesToGo, i)){
+                        Append(head, l);
+                        Append(head, i);
                         if(placesToGo.top() == i){
                             placesToGo.pop();
-                            cout << "if statement nested2 hits 1\n";
-                            continue;
                         }
                         else{
                             stack<int> copyPlaces;
                             stack<int> copyPlaces1 = placesToGo;
-                            cout << "else statement hits 2\n";
                             while(!copyPlaces1.empty()){
                                 if(copyPlaces1.top() != i){
-                                    cout << "while if statement hits 3\n";
                                     copyPlaces.push(copyPlaces1.top());
                                     copyPlaces1.pop();
                                     placesToGo = copyPlaces;
+                                    l = i;
                                     continue;
                                 }
-                                /* else{
-                                    cout << "last else statement hits\n";
+                                else{
+                                    copyPlaces1.pop();
+                                    l = i;
                                     continue;
-                                } */
+                                }
                             }
-                            continue;
                         }
                     }
+                    /* else{
+                        for(int q=0; q<140; q++){
+                            if(adj[i][q] && searchStck(placesToGo, q) && visits[q] != true){
+                                Que.push_back(q);
+                                visits[q] = true;
+                                Append(head, i);
+                                Append(head, q);
+                                if(placesToGo.top() == i){
+                                    placesToGo.pop();
+                                    l = q;
+                                    continue;
+                                }
+                                else{
+                                    stack<int> copyPlaces;
+                                    stack<int> copyPlaces1 = placesToGo;
+                                    while(!copyPlaces1.empty()){
+                                        if(copyPlaces1.top() != i){
+                                            copyPlaces.push(copyPlaces1.top());
+                                            copyPlaces1.pop();
+                                            placesToGo = copyPlaces;
+                                            l = q;
+                                            continue;
+                                        }
+                                        else{
+                                            copyPlaces1.pop();
+                                            l = q;
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                            /* else{
+                                for(int r=0; r<140; r++){
+                                    if(adj[q][r] && searchStck(placesToGo, r) && visits[r] != true){
+                                        Que.push_back(r);
+                                        visits[r] = true;
+                                        Append(head, q);
+                                        Append(head, r);
+                                        if(placesToGo.top() == q){
+                                            placesToGo.pop();
+                                        }
+                                        else{
+                                            stack<int> copyPlaces;
+                                            stack<int> copyPlaces1 = placesToGo;
+                                            while(!copyPlaces1.empty()){
+                                                if(copyPlaces1.top() != q){
+                                                    copyPlaces.push(copyPlaces1.top());
+                                                    copyPlaces1.pop();
+                                                    placesToGo = copyPlaces;
+                                                    l = r;
+                                                    continue;
+                                                }
+                                                else{
+                                                    copyPlaces1.pop();
+                                                    l = r;
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    /* else{
+                                        for(int s=0; s<140; s++){
+                                            if(adj[r][s] && searchStck(placesToGo, s) && visits[s] != true){
+                                                Que.push_back(s);
+                                                visits[s] = true;
+                                                Append(head, r);
+                                                Append(head, s);
+                                                if(placesToGo.top() == r){
+                                                    placesToGo.pop();
+                                                }
+                                                else{
+                                                    stack<int> copyPlaces;
+                                                    stack<int> copyPlaces1 = placesToGo;
+                                                    while(!copyPlaces1.empty()){
+                                                        if(copyPlaces1.top() != r){
+                                                            copyPlaces.push(copyPlaces1.top());
+                                                            copyPlaces1.pop();
+                                                            placesToGo = copyPlaces;
+                                                            l = s;
+                                                            continue;
+                                                        }
+                                                        else{
+                                                            copyPlaces1.pop();
+                                                            l = s;
+                                                            continue;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } */
+                           //     }
+                         //   } 
+                       // }
+                    // } 
                     Que.push_back(i);
                     visits[i] = true;
-                }
-                continue;
             }
         }
-        break;
     }
-};
+    // printList(head);
+}
 
-/*
-Node* routefinder(int in, int out, Node* headd, Graph gr, int m, int curr){
-    // if(headd->val != in){
-      //  Node* inN = new Node();
-      //  headd->next = inN;
-      //  inN->val = in;
-    // } 
-    if(gr[in][out]){
-            Node* con = new Node();
-            con->val = out;
-            headd->next = con;
-            return con;
+/* void Graph::DFS(int st){
+    cout << st << " ";
+    vector<bool> visits;
+    visits[st] = true;
+    for(int i=0; i<140; i++){
+        if(adj[st][i] == 1 && (!visits[i])){
+            DFS(i, visits);
+        }
     }
-    else{
-        // bool flag = false;
-        // int min, current;        // minimum connections for path detected and current amount of connections
-        for(int k=0; k<140; k++){
-            if(gr[in][k]){
-                if(gr[k][out]){
-                    Node* conne = new Node();
-                    conne->val = k;
-                    headd->next = conne;
-                    Node* outN = new Node();
-                    outN->val = out;
-                    conne->next = outN;
-                    return outN;
+} */
+
+/* void Graph::dfsRoute(int st, int ol, stack<int> placesToGo, Node* head){
+    vector<bool> visits;
+    bool foo = false;
+    if(placesToGo.empty() && foo == false){
+        placesToGo.push(ol);
+    }
+    else if(placesToGo.empty() && foo == true){
+        return;
+    }
+    visits[st] = true;
+    for(int i=0; i<140; i++){
+        if(adj[st][i] == 1 && (!visits[i])){
+            if(searchStck(placesToGo, i)){
+                append(head, i);
+                dfsRoute(i, ol, placesToGo, head);
+            }
+            
+        }
+    }
+} */
+
+bool Graph::bFs(int ori, int dst, int route[], int dist[]){
+    list<int> queue;
+    bool visited[140];
+    for(int i=0; i<140; i++){
+        visited[i] = false;
+        dist[i] = INT8_MAX;
+        route[i] = -1;
+    }
+    visited[ori] = true;
+    dist[ori] = 0;
+    queue.push_back(ori);
+    while(!queue.empty()){
+        int t = queue.front();
+        // cout << t << " ";
+        queue.pop_front();
+        for(int i=0; i<140; i++){
+            if(visited[adj[t][i]] == false){
+                visited[adj[t][i]] = true;
+                dist[adj[t][i]] = dist[t] + 1;
+                route[adj[t][i]] = t;
+                queue.push_back(adj[t][i]);
+                if(adj[t][i] == dst){
+                    return true;
                 }
-                else{
-                    if(m != NULL){
-                        if(curr > m){
-                            continue;
-                        }
-                        else{
-                            curr++;
-                            headd->next = routefinder(k, out, headd, gr, m, curr)
-                        }
+            }
+        }
+    }
+    return false;
+}
+
+void Graph::printRte(int ori, int dst){
+    int route[140], dist[140];
+    if(bFs(ori, dst, route, dist) == false){
+        cout << "No connection found between " << ori << " and " << dst << endl;
+        return;
+    }
+    vector<int> path;
+    int crawl = dst;
+    path.push_back(crawl);
+    while (route[crawl] != -1) {
+        path.push_back(route[crawl]);
+        crawl = route[crawl];
+    }
+    cout << "Shortest path length is : " << dist[dst];
+    cout << "\nPath is::\n";
+    for (int i = path.size() - 1; i >= 0; i--){
+        cout << path[i] << " ";
+    }
+}
+
+
+void stackShffle(stack<int> stackman){
+    int GoatSize = stackman.size();
+    stack<int> sacrifice;
+    for(int g=0; g<GoatSize; g++){
+        int temp = stackman.top();
+        sacrifice.push(temp);
+        stackman.pop();
+    }
+    stackman = sacrifice;
+    return;
+}
+
+int Graph::rteFinder(int ori, int dst, Node* head){
+    int route[140], dist[140];
+    if(bFs(ori, dst, route, dist) == false){
+        cout << "No connection found between " << ori << " and " << dst << endl;
+        // cout << "Skipping set\n";
+        return 0;
+    }
+    vector<int> path;
+    int crawl = dst;
+    path.push_back(crawl);
+    cout << crawl << " is crawl." << endl;
+    while (route[crawl] != -1) {
+        path.push_back(route[crawl]);
+        crawl = route[crawl];
+    }
+    for(int v=0; v<path.size(); v++){
+        Append(head, path[v]);
+    }
+    return dist[dst];
+}
+
+void Graph::Task3(int orig, stack<int> places2Go, Node* head){
+    int pop1 = places2Go.top();
+    places2Go.pop();
+    int size = places2Go.size();
+    int length = rteFinder(orig, pop1, head);
+    if(length == 0){
+        for(int i=0; i<size; i++){
+            // places2Go.push(pop1);
+            // pop1 = places2Go.top();
+            // places2Go.pop();
+            stackShffle(places2Go);
+            pop1 = places2Go.top();
+            length = rteFinder(orig, pop1, head);
+            if(length != 0){
+                break;
+            }
+        }
+    }
+    cout << " ";
+    if(length == 0){
+        cout << "No route can be found for the supplied values. Try again with new input.\n";
+        return;
+    }
+    int top;
+    int connects;
+    int pop;
+    while(!places2Go.empty()){
+        top = places2Go.top();
+        places2Go.pop();
+        if(places2Go.empty()){
+            int length1;
+            length1 = rteFinder(top, orig, head);// + length;
+            if(length1 == 0){
+                cout << "No route can be found for the supplied values of destinations back to the origin point. Try again with new input.\n";
+                cout << "Disconnect occurs between " << top << " and " << orig << endl;
+                // return;
+                return;
+            }
+            length = length + length1;
+            break;
+        }
+        else{
+            pop = places2Go.top();
+            places2Go.pop();
+            int length1;
+            length1 = rteFinder(top, pop, head); //+ length;
+            if(length1 == 0){
+                for(int i=0; i<size; i++){
+                    stackShffle(places2Go);
+                    pop = places2Go.top();
+                    length1 = rteFinder(orig, pop, head);
+                    if(length1 != 0){
+                        break;
                     }
                 }
             }
+            cout << " ";
+            if(length1 == 0){
+                cout << "No route can be found for the supplied values of destinations. Try again with new input city.\n";
+                cout << "The destinations fail for the city at int " << orig << endl;
+                return;
+            }
+            continue;
         }
-        // int min;
     }
-    
+    cout << "Route in circular fashion with shortest amount of connections is: \n";
+    printList(head);
+    cout << "\nConnection count is " << length << " including main destinations.\n";
+    connects = length - size;
+    cout << "Not including main destinations the connection count is " << connects << endl;
 }
-*/
 
 struct strCmp {
     bool operator()( const string s1, const string s2 ) const {
@@ -364,7 +550,7 @@ int main(int argc, char *argv[]){
 
       if (line.find("From:", 0) == 0 ){
           line.erase(0,7);
-	  printf("%s\n", line.c_str());
+	  // printf("%s\n", line.c_str());
           if(city.find(line) != city.end()){
 	  	//cout << "locate!" << line <<  line.length() << endl;
 	  }
@@ -397,15 +583,15 @@ int main(int argc, char *argv[]){
                 destinations.push(d);
             }
         }
-        // vector<int>::iterator itr;
         int e = destinations.top();
-        // head->next = 
-        // newNode(head, e);
         head->next = nexNode;
         nexNode->val = e;
         int f = destinations.size();
+        vector<bool> visited(140, false);
 
-        /* cout << "Destinations size is " << destinations.size() << endl;
+        /*
+        cout << "Destinations size is " << destinations.size() << endl;
+        stack<int> desCopy1 = destinations;
         stack<int> desCopy = destinations;
         cout << "These are the destination integers: ";
         while(!desCopy.empty()){
@@ -413,12 +599,29 @@ int main(int argc, char *argv[]){
             desCopy.pop();
             cout << ", ";
             continue;
-        } */
-        // cout << "\n---------------------------------------------\n";
+        }
+        cout << endl;
+        stackShffle(desCopy1);
+        cout << "These are the destination integers 'shuffled': ";
+        while(!desCopy1.empty()){
+            cout << desCopy1.top();
+            desCopy1.pop();
+            cout << ", ";
+            continue;
+        }
+        cout << "\n---------------------------------------------\n";
+        */
+
         // graph.BFS(originI);
-        graph.bfsRoute(originI, destinations);
-        /*
-        // while(!destinations.empty()){
+        // graph.bfsRoute(originI, destinations, nexNode);
+        // graph.Task3(originI, destinations, head);
+        graph.rteFinder(1, 88, head);
+        printList(head);
+        // graph.DFS(originI, visited);
+        // graph.printRte(88, 1);
+        
+       //* if(ptask == 5){
+       /* while(!destinations.empty()){
             for(int h=0; h<140; h++){
                 // cout << "For loop 1 is starting...\n";
                 if(graph.adj[destinations.top()][h]){
@@ -436,15 +639,10 @@ int main(int argc, char *argv[]){
                 // routeFinder(nexNode->val, destinations.top(), nexNode, graph);
             } */
         // }
-   }
-   /*if(graph.adjChck(cityg1, cityg2)){
-        cout << cityg1 << " and " << cityg2 << " are adjacent!! True!!\n";
-   }
-   else{
-        cout << cityg1 << " and " << cityg2 << " are not adjacent!! False!!\n";
-   }
+    //}
+   //}
    /* print the graph */
-
+   }
     // --------------------------------------------------------------------------------
    // graph printout is below, this should be uncommented out for the final submission
    // ----------------------------------------------------------------------------------
