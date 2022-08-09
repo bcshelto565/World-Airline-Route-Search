@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <list>
 #include <queue>
+#include <time.h>
 using namespace std;
 
 /*
@@ -59,6 +60,7 @@ private:
                     countPath++;
                 }
 
+                //return the count if it's less than the connections given
                 if(countPath < numConnections) {
                     return countPath;
                 }
@@ -67,8 +69,12 @@ private:
                 }
             }
 
+            //remove the node from queue whose neighbors will be visited now
             q.pop();
 
+            //get all adjacent nodes of the dequeued
+            //node - if an adjacent node has not been visited,
+            //then mark it visited and enqueue it
             for(auto nbr: temp->edgeList) {
                 if(!nbr.first->discovered) {
                     nbr.first->discovered = true;
@@ -81,7 +87,7 @@ private:
         return -1;
     }
 
-    int shortestPathBFS(City* cityA, City* cityB) {
+    int shortestPathBreadthFirst(City* cityA, City* cityB) {
         queue<City*> q;
 
         //make all cities undiscovered
@@ -107,6 +113,7 @@ private:
                     countPath++;
                 }
 
+                //return shortest path
                 return countPath;
             }
 
@@ -239,15 +246,15 @@ public:
         City* cityD = graph[cityDName];
 
         //shortest path from A->B;
-        int pathAB = shortestPathBFS(cityA, cityB);
+        int pathAB = shortestPathBreadthFirst(cityA, cityB);
         cout << "A->B: " << pathAB << " " << endl;
 
         //shortest path from B->C
-        int pathBC = shortestPathBFS(cityB, cityC);
+        int pathBC = shortestPathBreadthFirst(cityB, cityC);
         cout << "B->C: " << pathBC << " " << endl;
 
         //shortest path from C->D
-        int pathCD = shortestPathBFS(cityC, cityD);
+        int pathCD = shortestPathBreadthFirst(cityC, cityD);
         cout << "C->D: " << pathCD << " " << endl;
 
         int totalPathDist = pathAB + pathBC + pathCD;
@@ -282,6 +289,8 @@ int main() {
     string line, node1, node2, cityA, cityB, cityC, cityD;
     int userChoice = -1;
     int userNumConnects = 0;
+    double accumulatedTime;                     //accumulated time
+    timespec start, end;                        //begin and end of timing
 
     while(inputFile.getline(lineArr, 256)) {
         line = lineArr;
@@ -326,7 +335,16 @@ int main() {
             cin >> userNumConnects;
 
             cout << endl << "PRINTING RESULT --------------------------------" << endl;
+
+            clock_gettime(CLOCK_REALTIME, &start);
+
             worldAirline.testOne(cityA, cityB, userNumConnects);
+
+            clock_gettime(CLOCK_REALTIME, &end);
+
+            accumulatedTime = (end.tv_nsec - start.tv_nsec);
+
+            cout << "Run time: " << accumulatedTime << " nanoseconds\n";
             cout << "------------------------------------------------" << endl;
 
         }
@@ -342,7 +360,16 @@ int main() {
             getline(cin, cityD);
 
             cout << endl << "PRINTING RESULT --------------------------------" << endl;
+
+            clock_gettime(CLOCK_REALTIME, &start);
+
             worldAirline.testTwo(cityA, cityB, cityC, cityD);
+
+            clock_gettime(CLOCK_REALTIME, &end);
+
+            accumulatedTime = (end.tv_nsec - start.tv_nsec);
+
+            cout << "Run time: " << accumulatedTime << " nanoseconds\n";
             cout << "------------------------------------------------" << endl;
         }
         else if(userChoice == 3) {
