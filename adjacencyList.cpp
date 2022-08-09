@@ -279,7 +279,6 @@ public:
 
 };
 
-
 int main() {
 
     ifstream inputFile;
@@ -312,10 +311,10 @@ int main() {
 
     do {
         cout << "\nPlease choose a program to run or enter 0 to exit: " << endl;
-        cout << "Program 1: I am in city “A”, can I fly to city  “B”  with less than x connections? Give me the\n"
+        cout << "Program 1: I am in city 'A', can I fly to city  'B'  with less than x connections? Give me the\n"
                 "route with the smallest number of connections or tell me there is no such a route.\n"
                 "\nProgram 2: Give me the route with the smallest number of connections from city “A” to city\n"
-                "“D” through city “B” and “C”. (the order of  “B” and “C” is not important). Or\n"
+                "“D” through city 'B' and 'C'. (the order of 'B' and 'C' is not important). Or\n"
                 "tell me there is no such a route\n"
                 "\nProgram 3: Print adjacency list"<< endl;
 
